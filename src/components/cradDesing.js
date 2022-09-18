@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
+import { exportComponentAsPNG } from "react-component-export-image";
 
 function CradDesing() {
   const [name, setName] = useState('')
@@ -7,7 +8,7 @@ function CradDesing() {
   const [image, setImage] = useState('')
   const [qr, setQr] = useState('')
   const [issubmit, setIssubmit] = useState(false)
-
+  const panelRef= useRef()
   const submit = (e) => {
     e.preventDefault();
     setIssubmit(true)
@@ -88,9 +89,9 @@ function CradDesing() {
           <button className='ml-[170px] mt-5 py-2 bg-green-500 hover:bg-black duration-100 text-white hover rounded px-5 border' type='submit'>Submit</button>
         </form>
       </div>
-      <div>
-      <div className='relative pb-20'>
-          <img className='w-[433px] h-[743px]' src="/bg.jpg" alt="" download />
+      <div className=''>
+      <div className='relative w-[440px]' ref={panelRef}>
+          <img className='w-[440px] h-[743px]' src="/bg.jpg" alt="" download />
           <h1 className='absolute top-2 left-3 font-bold text-white text-[20px]'>TARAFDAR STUDENTS <br />DEVELOPMENT ASSOCIATION</h1>
           <div className='flex flex-col justify-center items-center'>
             <img className='w-[150px] h-[150px] object-cover  rounded-[50%]  absolute top-[170px] border-4 border-blue-800' src={issubmit && image} alt="" />
@@ -101,8 +102,12 @@ function CradDesing() {
           <span className='absolute top-[440px] left-[28%] flex text-sm gap-x-[107px] text-black'>Name<p>: {issubmit && name}</p></span>
           <span className='absolute top-[460px] left-[28%] flex text-sm gap-x-[114px] text-black'>Rank<p>: {issubmit && rank}</p></span>
           <span className='absolute top-[480px] left-[28%] flex text-sm gap-x-10 text-black'>Date Of Creation<p>: 06 08 2020</p></span>
-          <img className="w-[110px] h-[105px] absolute bottom-[92px] bg-white z-10 left-4" w src={issubmit && qr} alt="" />
+          <img className="w-[110px] h-[105px] absolute bottom-[12px] bg-white z-10 left-4" w src={issubmit && qr} alt="" />
+     
         </div>
+      <button className='ml-[170px] mb-5 mt-2 py-2 bg-green-500 hover:bg-black duration-100 text-white hover rounded px-5 border' onClick={() => exportComponentAsPNG(panelRef) }>
+            Download
+        </button>
       </div>
     </div>
   )
