@@ -1,31 +1,67 @@
 import React, { useRef, useState } from 'react'
 import { exportComponentAsPNG } from "react-component-export-image";
+import { storage } from '../components/utils/firebase'
 
 function CradDesing() {
   const [name, setName] = useState('')
   const [rank, setRank] = useState('')
   const [idnum, setIdnum] = useState('')
-  const [image, setImage] = useState('')
-  const [qr, setQr] = useState('')
+  const [image, setImage] = useState(null)
+  const [qr, setQr] = useState(null)
+  const [url, setUrl] = useState(null)
+  const [urlqr, setUrlqr] = useState(null)
   const [issubmit, setIssubmit] = useState(false)
   const panelRef= useRef()
+
   const submit = (e) => {
     e.preventDefault();
     setIssubmit(true)
   }
+  const handleChange = (e) => {
+  setImage(e.target.files[0])
+  }
+  const handleChangeQr = (e) => {
+  setQr(e.target.files[0]);
+  }
+
+  const uploadImage = ( ) => {
+    if(!image) return alert('Choose An Image')
+    const storageRef = storage.ref(`profile/${image.name}`); 
+    const uploadTask = storageRef.put(image)
+    uploadTask.on(
+      "state_changed",
+      async () => {
+          const url = await storageRef.getDownloadURL()
+          setUrl(url);
+      }
+  )
+  }
+  const uploadImageqr = ( ) => {
+    if(!qr) return alert('Choose An Image')
+    const storageRef = storage.ref(`qr/${qr.name}`); 
+    const  uploadTask = storageRef.put(qr)
+    uploadTask.on(
+      "state_changed",
+      async () => {
+          const url = await storageRef.getDownloadURL()
+          setUrlqr(url);
+      }
+  )
+  }
+
+  
 
   return (
     <div className=''>
       <div className='py-10'>
         <form onSubmit={submit}>
           <div className='flex flex-wrap max-w-[440px]'>
-            <h1 className='py-3 font-bold text-[12px]'>How To Get Image Link: Fast go <a className='underline text-[15px]' href="https://postimg.cc">https://postimg.cc</a> now click Do Not resize my image + no expiration . choose your image then upload now show a dashboard copy <span className='font-bold text-sm'>Direact Link</span> use this link image or Qr image field.</h1>
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                 Name
               </label>
               <input
-                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                 id="grid-first-name"
                 type="text"
                 placeholder="Enter Your Name"
@@ -33,12 +69,12 @@ function CradDesing() {
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                 Rank
               </label>
               <input
-                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                 id="grid-first-name"
                 type="text"
                 placeholder="Enter Your Rank"
@@ -46,12 +82,12 @@ function CradDesing() {
                 onChange={(e) => setRank(e.target.value)}
               />
             </div>
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" >
                 Id No
               </label>
               <input
-                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                 id="grid-first-name"
                 type="text"
                 placeholder="ID NO"
@@ -59,42 +95,47 @@ function CradDesing() {
                 onChange={(e) => setIdnum(e.target.value)}
               />
             </div>
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
-                Profile Image Link
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <label className="">
+                Profile Image
               </label>
-              <input
-                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            <div>
+            <input
+                className=""
                 id="grid-first-name"
-                type="text"
-                placeholder="IMAGE LINK"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
+                type="file"
+                accept='image/*'
+                onChange={handleChange}
               />
+              <button className='mb-5 mt-2 py-2 bg-green-500 hover:bg-black duration-100 text-white hover rounded px-5 border' onClick={uploadImage}>Upload Image</button>
             </div>
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
-                QR Image Link
+            </div>
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                QR Image 
               </label>
-              <input
-                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+             <div>
+             <input
+                className="e"
                 id="grid-first-name"
-                type="text"
-                placeholder="QR LINK"
-                value={qr}
-                onChange={(e) => setQr(e.target.value)}
+                type="file"
+                accept='image/*'
+                onChange={handleChangeQr}
               />
+              <button className='mb-5 mt-2 py-2 bg-green-500 hover:bg-black duration-100 text-white hover rounded px-5 border' onClick={uploadImageqr}>Upload Image</button>
+             </div>
             </div>
           </div>
+          <h1 className='flex items-center justify-center text-xl'>Must Click Upload Image Then Click Submit</h1>
           <button className='ml-[170px] mt-5 py-2 bg-green-500 hover:bg-black duration-100 text-white hover rounded px-5 border' type='submit'>Submit</button>
         </form>
       </div>
       <div className=''>
-      <div className='relative w-[440px]' ref={panelRef}>
+      <div className='relative' ref={panelRef}>
           <img className='w-[440px] h-[743px]' src="/bg.jpg" alt="" download />
-          <h1 className='absolute top-2 left-3 font-bold text-white text-[20px]'>TARAFDAR STUDENTS <br />DEVELOPMENT ASSOCIATION</h1>
+          <h1 className='absolute top-2 left-3 font-bold text-white md:text-[20px] sm:text-[19px] text-[17px]'>TARAFDAR STUDENTS <br />DEVELOPMENT ASSOCIATION</h1>
           <div className='flex flex-col justify-center items-center'>
-            <img className='w-[150px] h-[150px] object-cover  rounded-[50%]  absolute top-[170px] border-4 border-blue-800' src={issubmit && image} alt="" />
+           {url &&  <img className='w-[150px] h-[150px] object-cover  rounded-[50%]  absolute top-[170px] border-4 border-blue-800' src={issubmit && url} alt="" />}
             <h1 className='absolute top-[330px] font-bold text-2xl'>{issubmit && name}</h1>
             <h3 className='absolute top-[360px] text-md font-semibold text-gray-700'>{issubmit && rank}</h3>
           </div>
@@ -102,10 +143,10 @@ function CradDesing() {
           <span className='absolute top-[440px] left-[28%] flex text-sm gap-x-[107px] text-black'>Name<p>: {issubmit && name}</p></span>
           <span className='absolute top-[460px] left-[28%] flex text-sm gap-x-[114px] text-black'>Rank<p>: {issubmit && rank}</p></span>
           <span className='absolute top-[480px] left-[28%] flex text-sm gap-x-10 text-black'>Date Of Creation<p>: 06 08 2020</p></span>
-          <img className="w-[110px] h-[105px] absolute bottom-[12px] bg-white z-10 left-4" w src={issubmit && qr} alt="" />
+          {urlqr && <img className="w-[110px] h-[105px] absolute bottom-[12px] bg-white z-10 sm:left-4 left-4" w src={urlqr} alt="" />}
      
         </div>
-      <button className='ml-[170px] mb-5 mt-2 py-2 bg-green-500 hover:bg-black duration-100 text-white hover rounded px-5 border' onClick={() => exportComponentAsPNG(panelRef) }>
+      <button className='md:ml-[170px] ml-[120px] mb-5 mt-2 py-2 bg-green-500 hover:bg-black duration-100 text-white hover rounded px-5 border' onClick={() => exportComponentAsPNG(panelRef) }>
             Download
         </button>
       </div>
