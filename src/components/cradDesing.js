@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react'
 import { exportComponentAsPNG } from "react-component-export-image";
-import { storage } from '../components/utils/firebase'
 
 function CradDesing() {
   const [name, setName] = useState('')
@@ -8,8 +7,6 @@ function CradDesing() {
   const [idnum, setIdnum] = useState('')
   const [image, setImage] = useState(null)
   const [qr, setQr] = useState(null)
-  const [url, setUrl] = useState(null)
-  const [urlqr, setUrlqr] = useState(null)
   const [issubmit, setIssubmit] = useState(false)
   const panelRef= useRef()
 
@@ -24,38 +21,11 @@ function CradDesing() {
   setQr(e.target.files[0]);
   }
 
-  const uploadImage = ( ) => {
-    if(!image) return alert('Choose An Image')
-    const storageRef = storage.ref(`profile/${image.name}`); 
-    const uploadTask = storageRef.put(image)
-    uploadTask.on(
-      "state_changed",
-      async () => {
-          const url = await storageRef.getDownloadURL()
-          setUrl(url);
-      }
-  )
-  }
-  const uploadImageqr = ( ) => {
-    if(!qr) return alert('Choose An Image')
-    const storageRef = storage.ref(`qr/${qr.name}`); 
-    const  uploadTask = storageRef.put(qr)
-    uploadTask.on(
-      "state_changed",
-      async () => {
-          const url = await storageRef.getDownloadURL()
-          setUrlqr(url);
-      }
-  )
-  }
-
-  
-
   return (
     <div className=''>
       <div className='py-10'>
         <form onSubmit={submit}>
-          <div className='flex flex-wrap max-w-[440px]'>
+          <div className='flex flex-wrap max-w-[440px] pb-4'>
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                 Name
@@ -107,7 +77,6 @@ function CradDesing() {
                 accept='image/*'
                 onChange={handleChange}
               />
-              <button className='mb-5 mt-2 py-2 bg-green-500 hover:bg-black duration-100 text-white hover rounded px-5 border' onClick={uploadImage}>Upload Image</button>
             </div>
             </div>
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -122,7 +91,6 @@ function CradDesing() {
                 accept='image/*'
                 onChange={handleChangeQr}
               />
-              <button className='mb-5 mt-2 py-2 bg-green-500 hover:bg-black duration-100 text-white hover rounded px-5 border' onClick={uploadImageqr}>Upload Image</button>
              </div>
             </div>
           </div>
@@ -135,7 +103,7 @@ function CradDesing() {
           <img className='w-[440px] h-[743px]' src="/bg.jpg" alt="" download />
           <h1 className='absolute top-2 left-3 font-bold text-white md:text-[20px] sm:text-[19px] text-[17px]'>TARAFDAR STUDENTS <br />DEVELOPMENT ASSOCIATION</h1>
           <div className='flex flex-col justify-center items-center'>
-           {url &&  <img className='w-[150px] h-[150px] object-cover  rounded-[50%]  absolute top-[170px] border-4 border-blue-800' src={issubmit && url} alt="" />}
+         {image && <img className='w-[150px] h-[150px] object-cover rounded-[50%] absolute top-[170px] border-4 border-blue-800' src={URL.createObjectURL(image)} alt="" />}
             <h1 className='absolute top-[330px] font-bold text-2xl'>{issubmit && name}</h1>
             <h3 className='absolute top-[360px] text-md font-semibold text-gray-700'>{issubmit && rank}</h3>
           </div>
@@ -143,7 +111,7 @@ function CradDesing() {
           <span className='absolute top-[440px] left-[28%] flex text-sm gap-x-[107px] text-black'>Name<p>: {issubmit && name}</p></span>
           <span className='absolute top-[460px] left-[28%] flex text-sm gap-x-[114px] text-black'>Rank<p>: {issubmit && rank}</p></span>
           <span className='absolute top-[480px] left-[28%] flex text-sm gap-x-10 text-black'>Date Of Creation<p>: 06 08 2020</p></span>
-          {urlqr && <img className="w-[110px] h-[105px] absolute bottom-[12px] bg-white z-10 sm:left-4 left-4" w src={urlqr} alt="" />}
+          {qr && <img className="w-[110px] h-[105px] absolute bottom-[12px] object-cover bg-white z-10 sm:left-4 left-4" w src={URL.createObjectURL(qr)} alt="" />}
      
         </div>
       <button className='md:ml-[170px] ml-[120px] mb-5 mt-2 py-2 bg-green-500 hover:bg-black duration-100 text-white hover rounded px-5 border' onClick={() => exportComponentAsPNG(panelRef) }>
